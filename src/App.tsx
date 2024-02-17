@@ -1,5 +1,11 @@
+import styles from "./App.module.less";
+
 const App = () => {
-  return <div className="app">hello my-cra</div>;
+  return (
+    <div className={styles["app"]}>
+      <div className={styles["text"]}>hello my-cra</div>
+    </div>
+  );
 };
 
 export default App;

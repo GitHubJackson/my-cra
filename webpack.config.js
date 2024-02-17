@@ -9,6 +9,17 @@ const config = {
     path: path.resolve(__dirname, "./dist"),
     filename: "index_bundle.js",
   },
+  resolve: {
+    extensions: [".tsx", ".ts", ".jsx", ".js"],
+  },
+  // cache: {
+  //   // 开启缓存
+  //   type: "filesystem",
+  //   buildDependencies: {
+  //     config: [__filename],
+  //   },
+  //   version: "1.0",
+  // },
   module: {
     rules: [
       {
@@ -49,6 +60,37 @@ const config = {
             // minify: process.env.NODE_ENV !== "development",
           },
         },
+      },
+      {
+        test: /(\.module)?\.less$/i,
+        use: [
+          "style-loader",
+          {
+            loader: require.resolve("css-loader"),
+            options: {
+              modules: {
+                auto: true,
+                localIdentName: "[local]_[hash:base64:5]",
+              },
+            },
+          },
+          "less-loader",
+        ],
+      },
+      {
+        test: /(\.module)?\.css$/i,
+        use: [
+          "style-loader",
+          {
+            loader: require.resolve("css-loader"),
+            options: {
+              modules: {
+                auto: true,
+                localIdentName: "[local]_[hash:base64:5]",
+              },
+            },
+          },
+        ],
       },
     ],
   },

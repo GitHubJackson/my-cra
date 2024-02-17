@@ -1,6 +1,6 @@
 {
   "name": "my-cra",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "从0到1搭建一个cra",
   "main": "index.js",
   "scripts": {
@@ -18,7 +18,11 @@
     "@swc/helpers": "^0.5.6",
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
+    "css-loader": "^6.10.0",
     "html-webpack-plugin": "^5.6.0",
+    "less": "^4.2.0",
+    "less-loader": "^12.2.0",
+    "style-loader": "^3.3.4",
     "swc-loader": "^0.2.6",
     "webpack": "^5.90.1",
     "webpack-cli": "^5.1.4",

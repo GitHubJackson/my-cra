@@ -1,0 +1,22 @@
+{
+  "name": "my-cra",
+  "version": "0.1.0",
+  "description": "从0到1搭建一个cra",
+  "main": "index.js",
+  "scripts": {
+    "serve": "webpack serve",
+    "watch": "webpack --watch",
+    "build": "webpack --mode=production --node-env=production",
+    "build:dev": "webpack --mode=development",
+    "build:prod": "webpack --mode=production --node-env=production",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Lucas",
+  "license": "ISC",
+  "devDependencies": {
+    "html-webpack-plugin": "^5.6.0",
+    "webpack": "^5.90.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
+  }
+}

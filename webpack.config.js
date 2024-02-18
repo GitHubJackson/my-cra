@@ -3,6 +3,10 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
+// 读取环境变量
+// const envName = process.env.NAME;
+// console.log('===envName', envName);
+
 const config = {
   entry: './src/index.tsx',
   output: {
@@ -10,6 +14,9 @@ const config = {
     filename: 'index_bundle.js',
   },
   resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
   },
   // cache: {

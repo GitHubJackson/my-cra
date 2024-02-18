@@ -1,16 +1,16 @@
-const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const isProduction = process.env.NODE_ENV == "production";
+const isProduction = process.env.NODE_ENV === 'production';
 
 const config = {
-  entry: "./src/index.tsx",
+  entry: './src/index.tsx',
   output: {
-    path: path.resolve(__dirname, "./dist"),
-    filename: "index_bundle.js",
+    path: path.resolve(__dirname, './dist'),
+    filename: 'index_bundle.js',
   },
   resolve: {
-    extensions: [".tsx", ".ts", ".jsx", ".js"],
+    extensions: ['.tsx', '.ts', '.jsx', '.js'],
   },
   // cache: {
   //   // 开启缓存
@@ -26,23 +26,23 @@ const config = {
         test: /\.[tj]sx?$/,
         exclude: /(node_modules)/,
         use: {
-          loader: "swc-loader",
+          loader: 'swc-loader',
           options: {
             jsc: {
               parser: {
-                syntax: "typescript",
+                syntax: 'typescript',
                 tsx: true,
                 decorators: true,
               },
               transform: {
                 legacyDecorator: true,
                 react: {
-                  runtime: "automatic",
+                  runtime: 'automatic',
                 },
               },
               // 以下配置需要先安装 @swc/helpers
               externalHelpers: true,
-              target: "es5",
+              target: 'es5',
               // minify: {
               //   compress: true
               //   format: {
@@ -56,7 +56,7 @@ const config = {
             //   mode: "usage",
             //   coreJs: "3",
             // },
-            isModule: "unknown",
+            isModule: 'unknown',
             // minify: process.env.NODE_ENV !== "development",
           },
         },
@@ -64,46 +64,76 @@ const config = {
       {
         test: /(\.module)?\.less$/i,
         use: [
-          "style-loader",
+          'style-loader',
           {
-            loader: require.resolve("css-loader"),
+            loader: require.resolve('css-loader'),
             options: {
               modules: {
                 auto: true,
-                localIdentName: "[local]_[hash:base64:5]",
+                localIdentName: '[local]_[hash:base64:5]',
               },
             },
           },
-          "less-loader",
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: ['postcss-preset-env'],
+              },
+            },
+          },
+          'less-loader',
         ],
       },
       {
         test: /(\.module)?\.css$/i,
         use: [
-          "style-loader",
+          'style-loader',
           {
-            loader: require.resolve("css-loader"),
+            loader: require.resolve('css-loader'),
             options: {
               modules: {
                 auto: true,
-                localIdentName: "[local]_[hash:base64:5]",
+                localIdentName: '[local]_[hash:base64:5]',
+              },
+            },
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: ['postcss-preset-env'],
               },
             },
           },
         ],
       },
+      {
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: 'asset',
+        parser: {
+          dataurlCondition: {
+            maxSize: 1024, // 单位是B
+          },
+        },
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/i,
+        type: 'asset/resource',
+      },
     ],
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: "./src/index.html",
-      filename: "index.html",
+      template: './src/index.html',
+      filename: 'index.html',
     }),
   ],
   devServer: {
     static: {
-      directory: path.join(__dirname, "public"),
+      directory: path.join(__dirname, 'public'),
     },
+    hot: true,
     compress: true,
     port: 8000,
   },
@@ -111,9 +141,9 @@ const config = {
 
 module.exports = () => {
   if (isProduction) {
-    config.mode = "production";
+    config.mode = 'production';
   } else {
-    config.mode = "development";
+    config.mode = 'development';
   }
   return config;
 };

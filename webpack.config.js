@@ -1,5 +1,21 @@
 const path = require('path');
+const glob = require('glob');
+const chalk = require('chalk');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ProgressBarPlugin = require('progress-bar-webpack-plugin');
+const BundleAnalyzerPlugin =
+  require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const { PurgeCSSPlugin } = require('purgecss-webpack-plugin');
+
+const PATHS = {
+  src: path.join(__dirname, 'src'),
+};
+
+const smp = new SpeedMeasurePlugin();
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -7,7 +23,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 // const envName = process.env.NAME;
 // console.log('===envName', envName);
 
-const config = {
+const config = smp.wrap({
   entry: './src/index.tsx',
   output: {
     path: path.resolve(__dirname, './dist'),
@@ -19,14 +35,23 @@ const config = {
     },
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
   },
-  // cache: {
-  //   // 开启缓存
-  //   type: "filesystem",
-  //   buildDependencies: {
-  //     config: [__filename],
-  //   },
-  //   version: "1.0",
-  // },
+  cache: {
+    type: 'filesystem',
+    buildDependencies: {
+      config: [__filename],
+    },
+    version: '1.0',
+  },
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new CssMinimizerPlugin(),
+      new TerserPlugin({
+        // 使用swc压缩
+        minify: TerserPlugin.swcMinify,
+      }),
+    ],
+  },
   module: {
     rules: [
       {
@@ -71,7 +96,7 @@ const config = {
       {
         test: /(\.module)?\.less$/i,
         use: [
-          'style-loader',
+          isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
           {
             loader: require.resolve('css-loader'),
             options: {
@@ -95,7 +120,7 @@ const config = {
       {
         test: /(\.module)?\.css$/i,
         use: [
-          'style-loader',
+          isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
           {
             loader: require.resolve('css-loader'),
             options: {
@@ -131,11 +156,23 @@ const config = {
     ],
   },
   plugins: [
+    new ProgressBarPlugin({
+      format: `  :msg [:bar] ${chalk.green.bold(':percent')} (:elapsed s)`,
+    }),
+    isProduction && new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({
       template: './src/index.html',
       filename: 'index.html',
     }),
-  ],
+    isProduction &&
+      new PurgeCSSPlugin({
+        paths: glob.sync(`${PATHS.src}/**/*`, { nodir: true }),
+      }),
+    new BundleAnalyzerPlugin({
+      // 设置为false，禁止自动打开分析页面
+      openAnalyzer: false,
+    }),
+  ].filter(Boolean),
   devServer: {
     static: {
       directory: path.join(__dirname, 'public'),
@@ -143,8 +180,10 @@ const config = {
     hot: true,
     compress: true,
     port: 8000,
+    open: true,
   },
-};
+  devtool: 'eval-cheap-module-source-map',
+});
 
 module.exports = () => {
   if (isProduction) {
